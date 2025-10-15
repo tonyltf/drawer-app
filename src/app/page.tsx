@@ -91,17 +91,18 @@ export default function DrawerApp() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 py-8">
-			<div className="max-w-4xl mx-auto px-4">
-				<h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+		<div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+			<div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+				<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
 					Participant Drawer
 				</h1>
 
-				<div className="bg-white rounded-lg shadow-md p-6 mb-8">
-					<h2 className="text-xl font-semibold text-gray-800 mb-4">
+				{/* Add Participant Section */}
+				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
 						Add Participant
 					</h2>
-					<div className="flex gap-4 mb-4">
+					<div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
 						<input
 							type="text"
 							placeholder="Participant name"
@@ -109,7 +110,7 @@ export default function DrawerApp() {
 							onChange={(e) =>
 								setNewParticipant({ ...newParticipant, name: e.target.value })
 							}
-							className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500"
+							className="flex-1 px-3 py-2 sm:py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm sm:text-base"
 						/>
 						<input
 							type="text"
@@ -118,43 +119,47 @@ export default function DrawerApp() {
 							onChange={(e) =>
 								setNewParticipant({ ...newParticipant, group: e.target.value })
 							}
-							className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500"
+							className="w-full sm:w-24 lg:w-32 px-3 py-2 sm:py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm sm:text-base"
 						/>
 						<button
 							type="button"
 							onClick={addParticipant}
-							className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+							className="w-full sm:w-auto px-4 py-2 sm:py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base font-medium"
 						>
-							Add
+							Add Participant
 						</button>
 					</div>
 				</div>
 
-				<div className="bg-white rounded-lg shadow-md p-6 mb-8">
-					<h2 className="text-xl font-semibold text-gray-800 mb-4">
+				{/* Participants List Section */}
+				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
 						Participants ({participants.length})
 					</h2>
 					{participants.length === 0 ? (
-						<p className="text-gray-500">No participants added yet.</p>
+						<p className="text-gray-500 text-sm sm:text-base">
+							No participants added yet.
+						</p>
 					) : (
-						<div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+						<div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
 							{participants.map((participant) => (
 								<div
 									key={participant.id}
-									className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+									className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
 								>
-									<div>
-										<span className="font-medium text-gray-500">
+									<div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 flex-1 min-w-0">
+										<span className="font-medium text-gray-700 text-sm sm:text-base truncate">
 											{participant.name}
 										</span>
-										<span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+										<span className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full self-start sm:self-auto whitespace-nowrap">
 											Group {participant.group}
 										</span>
 									</div>
 									<button
 										type="button"
 										onClick={() => removeParticipant(participant.id)}
-										className="text-red-600 hover:text-red-800"
+										className="text-red-600 hover:text-red-800 ml-2 p-1 text-lg sm:text-xl transition-colors flex-shrink-0"
+										aria-label={`Remove ${participant.name}`}
 									>
 										✕
 									</button>
@@ -164,55 +169,59 @@ export default function DrawerApp() {
 					)}
 				</div>
 
-				<div className="bg-white rounded-lg shadow-md p-6 mb-8">
-					<div className="flex items-center justify-between mb-4">
-						<h2 className="text-xl font-semibold text-gray-800">
+				{/* Generate Sequence Section */}
+				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+					<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+						<h2 className="text-lg sm:text-xl font-semibold text-gray-800">
 							Generate Sequence
 						</h2>
 						<button
 							type="button"
 							onClick={generateSequence}
 							disabled={participants.length === 0 || isGenerating}
-							className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
+							className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors text-sm sm:text-base font-medium"
 						>
 							{isGenerating ? "Generating..." : "Generate Sequence"}
 						</button>
 					</div>
 
 					{participants.length === 0 && (
-						<p className="text-gray-500">
+						<p className="text-gray-500 text-sm sm:text-base">
 							Add participants to generate a sequence.
 						</p>
 					)}
 				</div>
 
+				{/* Generated Sequence Section */}
 				{sequence.length > 0 && (
-					<div className="bg-white rounded-lg shadow-md p-6">
-						<h2 className="text-xl font-semibold text-gray-800 mb-4">
+					<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+						<h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
 							Generated Sequence
 						</h2>
-						<div className="space-y-2">
+						<div className="space-y-2 sm:space-y-3">
 							{sequence.map((participant, index) => (
 								<div
 									key={participant.id}
-									className="flex items-center p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-md border-l-4 border-green-500"
+									className="flex items-center p-3 sm:p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-md border-l-4 border-green-500 hover:from-green-100 hover:to-blue-100 transition-colors"
 								>
-									<div className="flex items-center space-x-4 w-full">
-										<span className="text-lg font-bold text-gray-700 w-8">
+									<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
+										<span className="text-base sm:text-lg font-bold text-gray-700 w-auto sm:w-8 flex-shrink-0">
 											{index + 1}.
 										</span>
-										<span className="font-medium text-gray-900">
-											{participant.name}
-										</span>
-										<span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
-											Group {participant.group}
-										</span>
+										<div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
+											<span className="font-medium text-gray-900 text-sm sm:text-base truncate">
+												{participant.name}
+											</span>
+											<span className="inline-flex px-2 sm:px-3 py-1 text-xs sm:text-sm bg-blue-100 text-blue-800 rounded-full self-start sm:self-auto whitespace-nowrap">
+												Group {participant.group}
+											</span>
+										</div>
 									</div>
 								</div>
 							))}
 						</div>
-						<div className="mt-4 p-4 bg-green-50 rounded-md">
-							<p className="text-sm text-green-700">
+						<div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 rounded-md">
+							<p className="text-xs sm:text-sm text-green-700">
 								✅ Sequence generated successfully! No participants from the
 								same group are placed next to each other.
 							</p>
