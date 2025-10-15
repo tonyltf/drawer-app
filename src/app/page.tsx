@@ -220,12 +220,6 @@ export default function DrawerApp() {
 								</div>
 							))}
 						</div>
-						<div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 rounded-md">
-							<p className="text-xs sm:text-sm text-green-700">
-								✅ Sequence generated successfully! No participants from the
-								same group are placed next to each other.
-							</p>
-						</div>
 					</div>
 				)}
 			</div>
