@@ -47,54 +47,97 @@ export default function DrawerApp() {
 
 		await new Promise((resolve) => setTimeout(resolve, 500));
 
-		const availableParticipants = [...participants];
-		const result: Participant[] = [];
+		// Try multiple attempts to find a valid sequence
+		let bestSequence: Participant[] = [];
+		let attempts = 0;
+		const maxAttempts = 100;
 
-		while (availableParticipants.length > 0) {
-			let nextParticipant: Participant | null = null;
-			const lastGroup =
-				result.length > 0 ? result[result.length - 1].group : null;
-			const firstGroup = result.length > 0 ? result[0].group : null;
+		while (attempts < maxAttempts) {
+			const availableParticipants = [...participants];
+			const result: Participant[] = [];
+			let isValidSequence = true;
 
-			// Find all participants that can be selected (different group than last and, if this is the last participant, different from first)
-			let validParticipants = availableParticipants.filter(
-				(p) => p.group !== lastGroup,
-			);
+			while (availableParticipants.length > 0 && isValidSequence) {
+				let nextParticipant: Participant | null = null;
+				const lastGroup =
+					result.length > 0 ? result[result.length - 1].group : null;
+				const firstGroup = result.length > 0 ? result[0].group : null;
 
-			// If this would be the last participant (only one left), also check it's different from first
-			if (availableParticipants.length === 1 && firstGroup) {
-				validParticipants = validParticipants.filter(
-					(p) => p.group !== firstGroup,
+				// Find participants that don't conflict with the last position
+				let validParticipants = availableParticipants.filter(
+					(p) => p.group !== lastGroup,
 				);
+
+				// If this would be the last participant, also ensure it's different from first
+				if (availableParticipants.length === 1 && firstGroup) {
+					validParticipants = validParticipants.filter(
+						(p) => p.group !== firstGroup,
+					);
+				}
+
+				// Additional check: if we're down to the last 2 participants, make sure we can complete the sequence
+				if (
+					availableParticipants.length === 2 &&
+					firstGroup &&
+					result.length > 1
+				) {
+					// Check if selecting each valid participant would allow us to place the final one
+					validParticipants = validParticipants.filter((candidate) => {
+						const remaining = availableParticipants.find(
+							(p) => p.id !== candidate.id,
+						);
+						if (!remaining) return true;
+						// The remaining participant should be different from both the candidate and the first
+						return (
+							remaining.group !== candidate.group &&
+							remaining.group !== firstGroup
+						);
+					});
+				}
+
+				if (validParticipants.length > 0) {
+					// Randomly select from valid participants
+					const randomIndex = Math.floor(
+						Math.random() * validParticipants.length,
+					);
+					nextParticipant = validParticipants[randomIndex];
+				} else if (availableParticipants.length > 0) {
+					// No valid participants found - this sequence attempt failed
+					isValidSequence = false;
+					break;
+				}
+
+				if (nextParticipant) {
+					result.push(nextParticipant);
+					const participantIndex = availableParticipants.findIndex(
+						(p) => p.id === nextParticipant!.id,
+					);
+					availableParticipants.splice(participantIndex, 1);
+				}
 			}
 
-			if (validParticipants.length > 0) {
-				// Randomly select from valid participants
-				const randomIndex = Math.floor(
-					Math.random() * validParticipants.length,
-				);
-				nextParticipant = validParticipants[randomIndex];
-
-				// Remove the selected participant from available list
-				const participantIndex = availableParticipants.findIndex(
-					(p) => p.id === nextParticipant!.id,
-				);
-				availableParticipants.splice(participantIndex, 1);
-			} else if (availableParticipants.length > 0) {
-				// If no valid participants (all same group), randomly select any
-				const randomIndex = Math.floor(
-					Math.random() * availableParticipants.length,
-				);
-				nextParticipant = availableParticipants[randomIndex];
-				availableParticipants.splice(randomIndex, 1);
+			// Check if this is a complete and valid sequence
+			if (isValidSequence && result.length === participants.length) {
+				// Final validation: ensure first and last are from different groups (if more than 1 participant)
+				if (
+					result.length <= 1 ||
+					result[0].group !== result[result.length - 1].group
+				) {
+					bestSequence = result;
+					break;
+				}
 			}
 
-			if (nextParticipant) {
-				result.push(nextParticipant);
+			// Keep track of the best sequence found so far (most participants placed)
+			if (result.length > bestSequence.length) {
+				bestSequence = result;
 			}
+
+			attempts++;
 		}
 
-		setSequence(result);
+		// If we couldn't find a perfect sequence, use the best one we found
+		setSequence(bestSequence);
 		setIsGenerating(false);
 	};
 
