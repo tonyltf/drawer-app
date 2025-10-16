@@ -54,11 +54,19 @@ export default function DrawerApp() {
 			let nextParticipant: Participant | null = null;
 			const lastGroup =
 				result.length > 0 ? result[result.length - 1].group : null;
+			const firstGroup = result.length > 0 ? result[0].group : null;
 
-			// Find all participants that can be selected (different group than last)
-			const validParticipants = availableParticipants.filter(
+			// Find all participants that can be selected (different group than last and, if this is the last participant, different from first)
+			let validParticipants = availableParticipants.filter(
 				(p) => p.group !== lastGroup,
 			);
+
+			// If this would be the last participant (only one left), also check it's different from first
+			if (availableParticipants.length === 1 && firstGroup) {
+				validParticipants = validParticipants.filter(
+					(p) => p.group !== firstGroup,
+				);
+			}
 
 			if (validParticipants.length > 0) {
 				// Randomly select from valid participants
